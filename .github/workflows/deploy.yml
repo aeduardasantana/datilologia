@@ -6,10 +6,15 @@ on:
       - main
   workflow_dispatch:
 
+concurrency:
+  group: deploy-datilologia
+  cancel-in-progress: true
+
 jobs:
   ftp-deploy:
     name: Deploy para public_html/datilologia
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
       - name: Baixar repositório
@@ -29,4 +34,5 @@ jobs:
             **/.git*/**
             **/node_modules/**
             .github/**
+            CNAME
             README.md
