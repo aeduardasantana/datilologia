@@ -1,84 +1,862 @@
-<html lang="pt-br">
+<!doctype html>
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dactilologia em LIBRAS</title>
-    <style>
-        @font-face {
-            font-family: 'Libras2020';
-            src: url('/Libras2020-Regular.ttf') format('truetype');
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            text-align: center;
-        }
-        
-        h1 {
-            color: #2c3e50;
-        }
-        
-        input {
-            width: 100%;
-            padding: 12px 20px;
-            margin: 20px 0;
-            font-size: 18px;
-            border: 2px solid #3498db;
-            border-radius: 5px;
-        }
-        
-        #resultado {
-            font-family: 'Libras2020', sans-serif;
-            font-size: 48px;
-            min-height: 80px;
-            margin-top: 30px;
-            word-wrap: break-word;
-        }
-        
-        .info {
-            margin-top: 40px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f2942">
+  <meta name="description" content="Ferramenta visual para representar letras, números, nomes e palavras no alfabeto manual da Libras.">
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="https://datilologia.compassrosesystems.com.br/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="Datilologia em Libras">
+  <meta property="og:description" content="Digite nomes, palavras ou frases e visualize sua representação no alfabeto manual da Libras.">
+  <meta property="og:url" content="https://datilologia.compassrosesystems.com.br/">
+  <title>Datilologia em Libras | Compass Rose Systems</title>
+
+  <style>
+    @font-face {
+      font-family: "Libras2020";
+      src: url("./Libras2020-Regular.ttf") format("truetype");
+      font-display: swap;
+    }
+
+    :root {
+      --navy: #0f2942;
+      --navy-2: #173f63;
+      --blue: #1f6feb;
+      --blue-soft: #eaf3ff;
+      --cyan: #0c8f8f;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #dce4ee;
+      --surface: #ffffff;
+      --surface-soft: #f6f9fc;
+      --success: #0b7a53;
+      --shadow: 0 20px 50px rgba(15, 41, 66, .10);
+      --radius-lg: 24px;
+      --radius-md: 16px;
+      --radius-sm: 11px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, rgba(31,111,235,.10), transparent 30rem),
+        linear-gradient(180deg, #f8fbff 0%, #ffffff 38%, #f7fafc 100%);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.55;
+    }
+
+    button, textarea { font: inherit; }
+
+    button, a { -webkit-tap-highlight-color: transparent; }
+
+    a { color: inherit; }
+
+    .skip-link {
+      position: fixed;
+      left: 1rem;
+      top: -5rem;
+      z-index: 50;
+      padding: .75rem 1rem;
+      color: #fff;
+      background: var(--navy);
+      border-radius: 10px;
+      text-decoration: none;
+    }
+
+    .skip-link:focus { top: 1rem; }
+
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(255,255,255,.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(220,228,238,.8);
+    }
+
+    .topbar-inner {
+      width: min(1120px, calc(100% - 32px));
+      min-height: 68px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: .75rem;
+      text-decoration: none;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--navy);
+    }
+
+    .brand-mark {
+      width: 38px;
+      height: 38px;
+      display: grid;
+      place-items: center;
+      border-radius: 12px;
+      color: #fff;
+      background: linear-gradient(145deg, var(--navy), var(--blue));
+      box-shadow: 0 8px 18px rgba(31,111,235,.22);
+      font-family: "Libras2020", sans-serif;
+      font-size: 1.55rem;
+      line-height: 1;
+    }
+
+    .brand small {
+      display: block;
+      margin-top: -2px;
+      color: var(--muted);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+
+    .top-link {
+      color: var(--navy-2);
+      text-decoration: none;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    .top-link:hover { text-decoration: underline; }
+
+    main {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .hero {
+      padding: clamp(3.5rem, 8vw, 6.5rem) 0 2.2rem;
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(330px, .96fr);
+      gap: clamp(2rem, 6vw, 5.5rem);
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 .9rem;
+      color: var(--blue);
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      max-width: 760px;
+      margin-bottom: 1.15rem;
+      color: var(--navy);
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+
+    .hero-copy > p:not(.eyebrow) {
+      max-width: 700px;
+      margin-bottom: 1.4rem;
+      color: #475569;
+      font-size: clamp(1.03rem, 2vw, 1.2rem);
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+
+    .tag {
+      padding: .46rem .72rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      color: #486174;
+      font-size: .82rem;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 360px;
+      display: grid;
+      place-items: center;
+    }
+
+    .hand-card {
+      width: min(100%, 430px);
+      padding: 2.15rem 1.5rem 1.55rem;
+      border: 1px solid rgba(255,255,255,.8);
+      border-radius: 34px;
+      color: #fff;
+      background: linear-gradient(145deg, var(--navy), #174e7b 62%, #1f6feb);
+      box-shadow: 0 28px 75px rgba(15, 41, 66, .25);
+      transform: rotate(2deg);
+    }
+
+    .hand-card .manual-word {
+      min-height: 108px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: "Libras2020", sans-serif;
+      font-size: clamp(3.5rem, 9vw, 5.8rem);
+      letter-spacing: .05em;
+      line-height: 1;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
+    .hand-card p {
+      margin: 1rem 0 0;
+      color: rgba(255,255,255,.78);
+      text-align: center;
+      font-size: .82rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .tool-shell {
+      margin: 1.5rem 0 4.5rem;
+      padding: clamp(1rem, 3vw, 1.8rem);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255,255,255,.9);
+      box-shadow: var(--shadow);
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: clamp(1.1rem, 3vw, 1.55rem);
+      border-radius: var(--radius-md);
+      background: var(--surface-soft);
+    }
+
+    .panel.result-panel {
+      display: flex;
+      flex-direction: column;
+      background: linear-gradient(180deg, #0f2942, #143b5e);
+      color: #fff;
+    }
+
+    .panel-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .panel-head h2 {
+      margin-bottom: .25rem;
+      font-size: 1.1rem;
+      letter-spacing: -.02em;
+    }
+
+    .panel-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .9rem;
+    }
+
+    .result-panel .panel-head p { color: rgba(255,255,255,.66); }
+
+    .counter {
+      flex: 0 0 auto;
+      padding: .32rem .55rem;
+      border-radius: 999px;
+      background: #fff;
+      color: var(--muted);
+      font-size: .75rem;
+      font-weight: 800;
+    }
+
+    label {
+      display: inline-block;
+      margin-bottom: .5rem;
+      color: var(--navy);
+      font-size: .9rem;
+      font-weight: 800;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 132px;
+      resize: vertical;
+      padding: 1rem;
+      border: 1.5px solid #cbd7e5;
+      border-radius: var(--radius-sm);
+      outline: none;
+      background: #fff;
+      color: var(--ink);
+      font-size: 1.05rem;
+      line-height: 1.45;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+
+    textarea:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 4px rgba(31,111,235,.12);
+    }
+
+    .help {
+      margin: .55rem 0 0;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    .examples {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      align-items: center;
+    }
+
+    .examples > span {
+      margin-right: .15rem;
+      color: var(--muted);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    .chip {
+      border: 1px solid #ccd9e7;
+      border-radius: 999px;
+      padding: .45rem .7rem;
+      background: #fff;
+      color: var(--navy-2);
+      cursor: pointer;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .chip:hover, .chip:focus-visible { border-color: var(--blue); }
+
+    .result-box {
+      flex: 1;
+      min-height: 182px;
+      display: grid;
+      place-items: center;
+      padding: 1rem;
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 14px;
+      background: rgba(255,255,255,.07);
+      overflow: hidden;
+    }
+
+    #resultado {
+      max-width: 100%;
+      font-family: "Libras2020", sans-serif;
+      font-size: clamp(3rem, 7vw, 5rem);
+      line-height: 1.35;
+      letter-spacing: .04em;
+      overflow-wrap: anywhere;
+      text-align: center;
+    }
+
+    #estadoVazio {
+      max-width: 290px;
+      color: rgba(255,255,255,.64);
+      text-align: center;
+      font-size: .9rem;
+    }
+
+    .normalized {
+      min-height: 1.35rem;
+      margin: .85rem 0 0;
+      color: rgba(255,255,255,.73);
+      font-size: .8rem;
+      text-align: center;
+    }
+
+    .actions {
+      margin-top: 1rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: .6rem;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 11px;
+      padding: .72rem .95rem;
+      cursor: pointer;
+      font-weight: 800;
+      transition: transform .16s ease, opacity .16s ease, background .16s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { cursor: not-allowed; opacity: .45; transform: none; }
+
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-secondary { background: rgba(255,255,255,.12); color: #fff; }
+    .btn-light { background: #fff; color: var(--navy); border: 1px solid #d6e0eb; }
+
+    .notice {
+      margin-top: 1rem;
+      padding: .9rem 1rem;
+      border-left: 4px solid #5db7ff;
+      border-radius: 10px;
+      background: var(--blue-soft);
+      color: #24445f;
+      font-size: .86rem;
+    }
+
+    .notice strong { color: var(--navy); }
+
+    .reference-section {
+      padding: 0 0 4.5rem;
+    }
+
+    .section-head {
+      max-width: 760px;
+      margin-bottom: 1.4rem;
+    }
+
+    .section-head h2 {
+      margin-bottom: .55rem;
+      color: var(--navy);
+      font-size: clamp(1.7rem, 4vw, 2.5rem);
+      letter-spacing: -.035em;
+    }
+
+    .section-head p { color: var(--muted); }
+
+    .alphabet-grid {
+      display: grid;
+      grid-template-columns: repeat(9, minmax(0, 1fr));
+      gap: .65rem;
+    }
+
+    .letter-button {
+      min-height: 96px;
+      padding: .7rem .35rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: .2rem;
+      border: 1px solid var(--line);
+      border-radius: 15px;
+      background: #fff;
+      color: var(--navy);
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(15,41,66,.04);
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+    }
+
+    .letter-button:hover,
+    .letter-button:focus-visible {
+      transform: translateY(-2px);
+      border-color: #8cb9f7;
+      box-shadow: 0 10px 26px rgba(31,111,235,.10);
+    }
+
+    .letter-glyph {
+      font-family: "Libras2020", sans-serif;
+      font-size: 2.35rem;
+      line-height: 1;
+    }
+
+    .letter-label {
+      color: var(--muted);
+      font-size: .7rem;
+      font-weight: 900;
+    }
+
+    .how-section {
+      margin-bottom: 4.5rem;
+      padding: clamp(1.2rem, 4vw, 2rem);
+      border-radius: var(--radius-lg);
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .how-section h2 { font-size: clamp(1.6rem, 4vw, 2.3rem); }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .8rem;
+    }
+
+    .step {
+      padding: 1.15rem;
+      border: 1px solid rgba(255,255,255,.13);
+      border-radius: 14px;
+      background: rgba(255,255,255,.06);
+    }
+
+    .step span {
+      width: 32px;
+      height: 32px;
+      display: grid;
+      place-items: center;
+      margin-bottom: .8rem;
+      border-radius: 50%;
+      background: #fff;
+      color: var(--navy);
+      font-size: .8rem;
+      font-weight: 900;
+    }
+
+    .step h3 { margin-bottom: .35rem; font-size: 1rem; }
+    .step p { margin: 0; color: rgba(255,255,255,.7); font-size: .88rem; }
+
+    footer {
+      padding: 2.2rem 0 2.8rem;
+      border-top: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .footer-inner {
+      width: min(1120px, calc(100% - 32px));
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.3fr .7fr;
+      gap: 2rem;
+      align-items: end;
+    }
+
+    .footer-product strong {
+      display: block;
+      margin-bottom: .45rem;
+      color: var(--navy);
+      font-size: 1.05rem;
+    }
+
+    .footer-product p {
+      max-width: 720px;
+      margin-bottom: .45rem;
+      color: var(--muted);
+      font-size: .84rem;
+    }
+
+    .footer-meta {
+      text-align: right;
+      color: var(--muted);
+      font-size: .78rem;
+    }
+
+    .footer-meta p { margin: .2rem 0; }
+
+    .footer-brand {
+      display: inline-block;
+      margin-top: .35rem;
+      color: var(--navy-2);
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .footer-brand:hover { text-decoration: underline; }
+
+    :focus-visible {
+      outline: 3px solid rgba(31,111,235,.35);
+      outline-offset: 3px;
+    }
+
+    @media (max-width: 900px) {
+      .hero, .tool-grid, .footer-inner { grid-template-columns: 1fr; }
+      .hero { padding-top: 3.2rem; }
+      .hero-visual { min-height: 250px; }
+      .hand-card { max-width: 520px; transform: none; }
+      .alphabet-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .footer-meta { text-align: left; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar-inner { min-height: 62px; }
+      .top-link { display: none; }
+      main { width: min(100% - 22px, 1120px); }
+      .hero { padding-top: 2.6rem; gap: 1.5rem; }
+      .hero-visual { min-height: 210px; }
+      .hand-card { padding: 1.5rem 1rem 1.1rem; border-radius: 24px; }
+      .tool-shell { margin-top: .8rem; padding: .65rem; border-radius: 18px; }
+      .panel { padding: 1rem; }
+      .actions .btn { flex: 1 1 120px; }
+      .alphabet-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; }
+      .letter-button { min-height: 84px; }
+      .steps { grid-template-columns: 1fr; }
+      .footer-inner { width: min(100% - 22px, 1120px); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
+    }
+  </style>
 </head>
 <body>
-    <h1>Conversor para Dactilologia em LIBRAS</h1>
-    <p>Digite uma palavra em português para ver sua representação em sinais no alfabeto manual:</p>
-    
-    <input type="text" id="inputTexto" placeholder="Digite seu texto aqui..." autofocus>
-    
-    <div id="resultado"></div>
-    
-    <div class="info">
-        <p>Dactilologia é o sistema de representação manual do alfabeto utilizado na Língua Brasileira de Sinais (LIBRAS).</p>
-    </div>
-    
-    <footer style="margin-top: 30px; text-align: arial;">
-        <p>Contato: dudowsantana@gmail.com</span></a></p>
-    </footer>
+  <a class="skip-link" href="#ferramenta">Ir para a ferramenta</a>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        document.getElementById('inputTexto').addEventListener('input', function() {
-            const texto = this.value.toUpperCase();
-            let resultado = '';
-            
-            for (let i = 0; i < texto.length; i++) {
-                const char = texto[i];
-                // A fonte Libras2020-Regular tem suporte para letras A-Z e números 0-9
-                if (/[A-Z0-9]/.test(char)) {
-                    resultado += char;
-                } else if (char === ' ') {
-                    resultado += ' '; // Mantém os espaços
-                }
-            }
-            
-            document.getElementById('resultado').textContent = resultado;
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="#inicio" aria-label="Datilologia - início">
+        <span class="brand-mark" aria-hidden="true">D</span>
+        <span>Datilologia<small>Alfabeto manual em Libras</small></span>
+      </a>
+      <a class="top-link" href="#alfabeto">Consultar alfabeto</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="hero-copy">
+        <p class="eyebrow">Ferramenta visual em Libras</p>
+        <h1>Digite. Veja. Soletre.</h1>
+        <p>Converta nomes, palavras, frases curtas e números para uma representação visual do alfabeto manual utilizado na Língua Brasileira de Sinais.</p>
+        <div class="hero-tags" aria-label="Características da ferramenta">
+          <span class="tag">Uso gratuito</span>
+          <span class="tag">Funciona no navegador</span>
+          <span class="tag">Sem envio de dados</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-hidden="true">
+        <div class="hand-card">
+          <div class="manual-word">LIBRAS</div>
+          <p>Alfabeto manual brasileiro</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="tool-shell" id="ferramenta" aria-labelledby="titulo-ferramenta">
+      <div class="tool-grid">
+        <div class="panel">
+          <div class="panel-head">
+            <div>
+              <h2 id="titulo-ferramenta">Escreva o texto</h2>
+              <p>Use nomes, palavras, frases curtas ou números.</p>
+            </div>
+            <span class="counter" id="contador">0/160</span>
+          </div>
+
+          <label for="inputTexto">Texto em português</label>
+          <textarea id="inputTexto" maxlength="160" rows="5" placeholder="Ex.: Goiânia, Libras, Eduarda 2026" aria-describedby="ajudaEntrada" autofocus></textarea>
+          <p class="help" id="ajudaEntrada">Acentos e cedilha são normalizados automaticamente: “ação” passa a “ACAO”.</p>
+
+          <div class="examples" aria-label="Exemplos rápidos">
+            <span>Testar:</span>
+            <button class="chip" type="button" data-example="Libras">Libras</button>
+            <button class="chip" type="button" data-example="Goiânia">Goiânia</button>
+            <button class="chip" type="button" data-example="Inclusão 2026">Inclusão 2026</button>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-light" id="limparBtn" type="button" disabled>Limpar</button>
+          </div>
+
+          <div class="notice">
+            <strong>Importante:</strong> esta ferramenta apresenta letras e números pelo alfabeto manual. Ela não traduz frases do português para a estrutura linguística da Libras.
+          </div>
+        </div>
+
+        <div class="panel result-panel" id="cartaoResultado">
+          <div class="panel-head">
+            <div>
+              <h2>Representação datilológica</h2>
+              <p>Resultado visual gerado no próprio navegador.</p>
+            </div>
+          </div>
+
+          <div class="result-box" aria-live="polite" aria-atomic="true">
+            <div id="estadoVazio">Digite algo ao lado ou escolha uma letra no alfabeto para começar.</div>
+            <div id="resultado" hidden></div>
+          </div>
+          <p class="normalized" id="textoNormalizado" aria-live="polite"></p>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="telaCheiaBtn" type="button" disabled>Exibir em tela cheia</button>
+            <button class="btn btn-secondary" id="copiarBtn" type="button" disabled>Copiar texto normalizado</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="reference-section" id="alfabeto" aria-labelledby="titulo-alfabeto">
+      <div class="section-head">
+        <p class="eyebrow">Consulta rápida</p>
+        <h2 id="titulo-alfabeto">Alfabeto manual e números</h2>
+        <p>Selecione uma letra ou número para adicioná-lo ao campo de texto e observar a composição da palavra.</p>
+      </div>
+      <div class="alphabet-grid" id="alphabetGrid" aria-label="Alfabeto manual e números"></div>
+    </section>
+
+    <section class="how-section" aria-labelledby="como-funciona">
+      <p class="eyebrow" style="color:#8fc4ff">Uso educacional</p>
+      <h2 id="como-funciona">Como usar a ferramenta</h2>
+      <div class="steps">
+        <article class="step">
+          <span>1</span>
+          <h3>Digite ou selecione</h3>
+          <p>Informe o nome, palavra ou número que deseja visualizar.</p>
+        </article>
+        <article class="step">
+          <span>2</span>
+          <h3>Observe a sequência</h3>
+          <p>Cada caractere compatível é exibido pela fonte do alfabeto manual.</p>
+        </article>
+        <article class="step">
+          <span>3</span>
+          <h3>Pratique com contexto</h3>
+          <p>Use a datilologia como apoio à soletração, sem confundi-la com sinais ou tradução para Libras.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-product">
+        <strong>Datilologia</strong>
+        <p>Ferramenta de apoio visual para consulta e prática do alfabeto manual utilizado na Língua Brasileira de Sinais (Libras).</p>
+        <p>O recurso é complementar e não substitui o aprendizado da Libras, a convivência com a comunidade surda nem a mediação de profissionais qualificados.</p>
+      </div>
+      <div class="footer-meta">
+        <p>© 2026 Datilologia. Todos os direitos reservados.</p>
+        <p aria-label="Versão atual">Versão 2.0</p>
+        <a class="footer-brand" href="https://gebtecnologia.grupoeduardabispo.com.br/" target="_blank" rel="noopener noreferrer">Desenvolvido por Compass Rose Systems · GEB Tecnologia</a>
+      </div>
+    </div>
+  </footer>
+
+  <noscript>
+    <div style="padding:1rem;text-align:center;background:#fff3cd;color:#5c4600">Esta ferramenta precisa de JavaScript ativado para gerar a representação datilológica.</div>
+  </noscript>
+
+  <script>
+    (() => {
+      const input = document.getElementById('inputTexto');
+      const resultado = document.getElementById('resultado');
+      const estadoVazio = document.getElementById('estadoVazio');
+      const textoNormalizado = document.getElementById('textoNormalizado');
+      const contador = document.getElementById('contador');
+      const limparBtn = document.getElementById('limparBtn');
+      const copiarBtn = document.getElementById('copiarBtn');
+      const telaCheiaBtn = document.getElementById('telaCheiaBtn');
+      const cartaoResultado = document.getElementById('cartaoResultado');
+      const alphabetGrid = document.getElementById('alphabetGrid');
+
+      const normalizeForManualAlphabet = (value) => value
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase()
+        .replace(/[^A-Z0-9\s]/g, '')
+        .replace(/\s+/g, ' ')
+        .trimStart();
+
+      const render = () => {
+        const raw = input.value;
+        const normalized = normalizeForManualAlphabet(raw);
+        const hasResult = normalized.trim().length > 0;
+
+        contador.textContent = `${raw.length}/160`;
+        resultado.textContent = normalized;
+        resultado.hidden = !hasResult;
+        estadoVazio.hidden = hasResult;
+        textoNormalizado.textContent = hasResult ? `Texto normalizado: ${normalized.trim()}` : '';
+        resultado.setAttribute('aria-label', hasResult ? `Representação datilológica de ${normalized.trim()}` : '');
+
+        limparBtn.disabled = raw.length === 0;
+        copiarBtn.disabled = !hasResult;
+        telaCheiaBtn.disabled = !hasResult;
+      };
+
+      const appendCharacter = (character) => {
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? input.value.length;
+        const next = `${input.value.slice(0, start)}${character}${input.value.slice(end)}`.slice(0, 160);
+        input.value = next;
+        const cursor = Math.min(start + character.length, next.length);
+        input.focus();
+        input.setSelectionRange(cursor, cursor);
+        render();
+      };
+
+      const buildAlphabet = () => {
+        const characters = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'];
+        const fragment = document.createDocumentFragment();
+
+        characters.forEach((character) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'letter-button';
+          button.setAttribute('aria-label', `Adicionar ${character}`);
+          button.innerHTML = `<span class="letter-glyph" aria-hidden="true">${character}</span><span class="letter-label">${character}</span>`;
+          button.addEventListener('click', () => appendCharacter(character));
+          fragment.appendChild(button);
         });
-    </script>
+
+        alphabetGrid.appendChild(fragment);
+      };
+
+      input.addEventListener('input', render);
+
+      document.querySelectorAll('[data-example]').forEach((button) => {
+        button.addEventListener('click', () => {
+          input.value = button.dataset.example || '';
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+          render();
+        });
+      });
+
+      limparBtn.addEventListener('click', () => {
+        input.value = '';
+        input.focus();
+        render();
+      });
+
+      copiarBtn.addEventListener('click', async () => {
+        const text = normalizeForManualAlphabet(input.value).trim();
+        if (!text) return;
+
+        try {
+          await navigator.clipboard.writeText(text);
+          const original = copiarBtn.textContent;
+          copiarBtn.textContent = 'Copiado';
+          setTimeout(() => { copiarBtn.textContent = original; }, 1600);
+        } catch {
+          copiarBtn.textContent = 'Não foi possível copiar';
+          setTimeout(() => { copiarBtn.textContent = 'Copiar texto normalizado'; }, 1800);
+        }
+      });
+
+      telaCheiaBtn.addEventListener('click', async () => {
+        if (!document.fullscreenEnabled || !cartaoResultado.requestFullscreen) return;
+        try {
+          await cartaoResultado.requestFullscreen();
+        } catch {
+          // O navegador pode bloquear a solicitação; a ferramenta permanece funcional.
+        }
+      });
+
+      buildAlphabet();
+      render();
+    })();
+  </script>
 </body>
 </html>
